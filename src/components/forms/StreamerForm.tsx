@@ -50,7 +50,7 @@ export const StreamerForm = ({addStreamer}: AddStreamerProps) => {
             method: "POST",
             body: multipartFormData,
         });
-
+        addStreamer()
         setIsLoading(false)
     }
 

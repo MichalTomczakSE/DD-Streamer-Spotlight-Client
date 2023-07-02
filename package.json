@@ -43,6 +43,7 @@
   },
   "devDependencies": {
     "@tanstack/react-query": "^4.29.19",
+    "react-icons": "^4.10.1",
     "react-select": "^5.7.3",
     "socket.io-client": "^4.7.1",
     "tailwindcss": "^3.3.2"
