@@ -1,7 +1,7 @@
-import { Modal } from "./common/Modal";
-import { useState } from 'react';
-import { StreamerForm } from './forms/StreamerForm'
-import { NavLink } from 'react-router-dom';
+import {Modal} from "./common/Modal";
+import {useState} from 'react';
+import {StreamerForm} from './forms/StreamerForm'
+import {NavLink} from 'react-router-dom';
 
 
 export const Header = () => {
@@ -21,32 +21,33 @@ export const Header = () => {
 
     return (
         <div className=" bg-black">
-            <nav className="flex items-center justify-between max-w-7xl mx-auto py-3 px-5">
-                <p className="text-white font-bold">STREAMERS.SPOTLIGHT</p>
-
-
-                <input
-                    type="text"
-                    placeholder="Find streamer"
-                    className="pl-1 h-8 w-64"
-                />
-
-
+            <nav className="flex flex-col sm:flex-row items-center justify-between max-w-7xl mx-auto py-3 px-5">
+                <p className="text-xs md:text-xl text-white font-bold p-2">STREAMERS.SPOTLIGHT</p>
                 <div>
+                    <input
+                        type="text"
+                        placeholder="Find streamer"
+                        className="p-2 h-8 w-48"
+                    />
+                </div>
+                <div
+                className="text-xs lg:text-lg">
                     <NavLink
                         to="/"
-                        className={({ isActive }) => `${isActive ? 'border-white border-b-2' : ''} mx-4 p-2 text-white  hover:border-b-2 hover:border-white transition-all hover:tracking-wider `}
+                        className={({isActive}) => `${isActive ? 'border-white border-b-2' : ''} mx-4 p-2 text-white  hover:border-b-2 hover:border-white transition-all hover:tracking-wider `}
                     >
                         All streamers
                     </NavLink>
 
                     <button
                         type='button'
+
                         onClick={() => {
                             setShowModal(true);
                             setShowForm(true);
                         }}
-                        className='text-white p-2'>Add streamer</button>
+                        className='text-white p-2 text-xs lg:text-lg'>Add streamer
+                    </button>
 
 
                     <Modal isOpen={showModal} onClose={() => hideAllModals()}>
