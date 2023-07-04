@@ -1,7 +1,9 @@
-import React, {ChangeEvent, FormEvent, useState} from "react";
+import React, {ChangeEvent, FormEvent, ReactNode, useContext, useState} from "react";
 import {Loader} from "../common/Loader"
 import {Platform} from "../../types/index"
 import {DatalistPlatform} from "./DatalistPlatform"
+import {Link, Route} from "react-router-dom";
+import {StreamerProfile} from "../../pages/StreamerProfile";
 
 interface AddStreamerProps {
     addStreamer: () => void;
@@ -22,6 +24,7 @@ interface SelectOption {
 export const StreamerForm = ({addStreamer}: AddStreamerProps) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [formData, setFormData] = useState<FormValues>({username: "", description: "", platform: ""});
+    const [formMessage, setFormMessage] = useState<ReactNode>(<></>);
     const [file, setFile] = useState<File>()
 
 
@@ -45,13 +48,22 @@ export const StreamerForm = ({addStreamer}: AddStreamerProps) => {
         if (file) {
             multipartFormData.append("image", file);
         }
-
         const res = await fetch("http://localhost:3000/streamers/", {
             method: "POST",
             body: multipartFormData,
         });
-        addStreamer()
-        setIsLoading(false)
+        const data = await res.json();
+        if (data.statusCode === 400) {
+            setIsLoading(false);
+            setFormMessage(
+                <div className="text-center">
+                    <span className='text-lg font-bold text-red-500 block '>{data.message}</span>
+                    <Link to={`streamer/${data.existingStreamer}`} className="font-bold" title={formData.username}>
+                        <span className="text-lg font-bold text-green-500"><u>Click here</u> to see his profile!</span>
+                    </Link>
+                </div>
+            )
+        }
     }
 
     const handlePlatformChange = (selectedOption: SelectOption | null) => {
@@ -69,6 +81,7 @@ export const StreamerForm = ({addStreamer}: AddStreamerProps) => {
                     </h3>
                     <Loader/>
                 </div>}
+                {formMessage}
                 {!isLoading &&
                     <form
                         className="space-y-6"
