@@ -6,8 +6,7 @@ import {Link, Route} from "react-router-dom";
 import {StreamerRedirect} from "../common/StreamerRedirect";
 
 interface AddStreamerProps {
-    addStreamer: () => void;
-    parentFunction?: () => void;
+    onRedirect: () => void;
 }
 
 interface FormValues {
@@ -22,7 +21,7 @@ interface SelectOption {
 }
 
 
-export const StreamerForm = ({addStreamer, parentFunction}: AddStreamerProps) => {
+export const StreamerForm = ({onRedirect}: AddStreamerProps) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [formData, setFormData] = useState<FormValues>({username: "", description: "", platform: ""});
     const [formMessage, setFormMessage] = useState<ReactNode>(<></>);
@@ -59,7 +58,7 @@ export const StreamerForm = ({addStreamer, parentFunction}: AddStreamerProps) =>
             setFormMessage(
                 <div className="text-center">
                     <span className='text-lg font-bold text-red-500 block '>{data.message}</span>
-                    <StreamerRedirect id={data.id} username={formData.username}/>
+                    <StreamerRedirect id={data.id} username={formData.username} parentFunction={() => onRedirect()}/>
                 </div>
             )
         }
