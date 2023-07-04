@@ -3,10 +3,10 @@ import {Loader} from "../common/Loader"
 import {Platform} from "../../types/index"
 import {DatalistPlatform} from "./DatalistPlatform"
 import {Link, Route} from "react-router-dom";
-import {StreamerProfile} from "../../pages/StreamerProfile";
+import {StreamerRedirect} from "../common/StreamerRedirect";
 
 interface AddStreamerProps {
-    addStreamer: () => void;
+    onRedirect: () => void;
 }
 
 interface FormValues {
@@ -21,7 +21,7 @@ interface SelectOption {
 }
 
 
-export const StreamerForm = ({addStreamer}: AddStreamerProps) => {
+export const StreamerForm = ({onRedirect}: AddStreamerProps) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [formData, setFormData] = useState<FormValues>({username: "", description: "", platform: ""});
     const [formMessage, setFormMessage] = useState<ReactNode>(<></>);
@@ -58,11 +58,22 @@ export const StreamerForm = ({addStreamer}: AddStreamerProps) => {
             setFormMessage(
                 <div className="text-center">
                     <span className='text-lg font-bold text-red-500 block '>{data.message}</span>
-                    <Link to={`streamer/${data.existingStreamer}`} className="font-bold" title={formData.username}>
-                        <span className="text-lg font-bold text-green-500"><u>Click here</u> to see his profile!</span>
-                    </Link>
+                    <StreamerRedirect id={data.id} username={formData.username} parentFunction={() => onRedirect()}/>
                 </div>
             )
+        }
+        if (res.status === 201) {
+            setIsLoading(false)
+            setFormMessage(
+                <div className='text-center'>
+                    <span className='text-lg font-bold text-red-500 block '>Streamer {formData.username} created successfully!</span>
+                    <StreamerRedirect id={data.id} username={formData.username}/>
+                </div>
+            )
+        }
+        if (!data) {
+            setIsLoading(false);
+            setFormMessage(<span className='text-lg font-bold text-red-500 block text-center'>Something went wrong... Please try again!</span>);
         }
     }
 
