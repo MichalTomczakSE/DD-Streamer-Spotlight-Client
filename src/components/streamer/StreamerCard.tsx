@@ -29,7 +29,7 @@ export const StreamerCard = ({id, username, platform, upVotes, downVotes}: GetSt
         const req = await fetch(`http://localhost:3000/streamers/${id}/vote`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({id, vote})
+            body: JSON.stringify({...vote})
         })
         const res = await req.json();
         const data = await res;
@@ -42,7 +42,7 @@ export const StreamerCard = ({id, username, platform, upVotes, downVotes}: GetSt
              className="bg-white mx-auto flex flex-col items-center h-96 rounded-xl hover:scale-105 transition-all w-full shadow-md">
             <Link to={`streamer/${id}`} className="w-full h-1/2">
                 <img
-                    src={streamerPhoto?.status === 404 ? "https://upload.wikimedia.org/wikipedia/commons/2/2f/No-photo-m.png" : streamerPhoto?.url}
+                    src={streamerPhoto?.status ? "https://upload.wikimedia.org/wikipedia/commons/2/2f/No-photo-m.png" : streamerPhoto?.url}
                     title={username}
                     alt={username}
                     className="h-full rounded-t-xl w-full object-cover"
