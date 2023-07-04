@@ -12,15 +12,19 @@ const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
 );
 root.render(
-    <WebSocketProvider value={socket}>
-        <QueryClientProvider client={queryClient}>
-            <React.StrictMode>
-                <BrowserRouter>
-                    <App/>
-                </BrowserRouter>
-            </React.StrictMode>
-        </QueryClientProvider>
-    </WebSocketProvider>
+    <div className='mx-auto'>
+        <div className="mx-auto">
+            <WebSocketProvider value={socket}>
+                <QueryClientProvider client={queryClient}>
+                    <React.StrictMode>
+                        <BrowserRouter>
+                            <App/>
+                        </BrowserRouter>
+                    </React.StrictMode>
+                </QueryClientProvider>
+            </WebSocketProvider>
+        </div>
+    </div>
 );
 
 
