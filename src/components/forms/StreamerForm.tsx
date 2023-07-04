@@ -72,6 +72,10 @@ export const StreamerForm = ({addStreamer, parentFunction}: AddStreamerProps) =>
                 </div>
             )
         }
+        if (!data) {
+            setIsLoading(false);
+            setFormMessage(<span className='text-lg font-bold text-red-500 block text-center'>Something went wrong... Please try again!</span>);
+        }
     }
 
     const handlePlatformChange = (selectedOption: SelectOption | null) => {
