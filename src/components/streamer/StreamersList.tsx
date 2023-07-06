@@ -38,10 +38,13 @@ export const StreamersList = () => {
                 )
             );
         })
-
+        socket.on('onCreate', (data) => {
+            setStreamers(prevState => [...prevState, data])
+        })
         return () => {
             socket.off('connect');
             socket.off('onVote');
+            socket.off('onCreate');
 
         }
     }, [socket])
