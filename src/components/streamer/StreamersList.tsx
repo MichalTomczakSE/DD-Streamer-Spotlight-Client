@@ -2,6 +2,7 @@ import React, {useContext, useEffect, useState} from "react";
 import {WebSocketContext} from "../../contexts/WebSocketContext"
 import {Platform} from "../../types";
 import {StreamerCard} from "./StreamerCard";
+import {Loader} from "../common/Loader";
 
 interface Streamer {
     id: string;
@@ -18,6 +19,7 @@ const getStreamersData = async () => {
 }
 export const StreamersList = () => {
     const [streamers, setStreamers] = useState<Streamer[] | []>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const socket = useContext(WebSocketContext);
 
     useEffect(() => {
@@ -25,12 +27,9 @@ export const StreamersList = () => {
         const fetchData = async () => {
             const data = await getStreamersData();
             setStreamers(data);
+            setIsLoading(false);
         };
         fetchData();
-
-        socket.on('connect', () => {
-            console.log('Connected!');
-        });
 
         socket.on('onVote', (data) => {
             setStreamers(prevStreamers =>
@@ -39,16 +38,21 @@ export const StreamersList = () => {
                 )
             );
         })
-        socket.on('addStreamer', fetchData);
 
         return () => {
             socket.off('connect');
             socket.off('onVote');
-            socket.off('addStreamer');
+
         }
     }, [socket])
 
-    if (!Array.isArray(streamers) || streamers.length === 0) {
+    if (isLoading) {
+        return <div
+            className='fixed inset-0 flex justify-center items-center scale-150'>
+            <Loader/>
+        </div>
+    }
+    if ((!Array.isArray(streamers) || streamers.length === 0) && isLoading) {
         return (
             <div className="w-full text-white bg-blue-700 hover:bg-blue-800
             focus:ring-4 focus:outline-none focus:ring-blue-300
@@ -57,18 +61,17 @@ export const StreamersList = () => {
             </div>
         )
     }
-
-        return (
-            <>
-                {streamers.map((streamer) => {
-                    return <StreamerCard id={streamer.id} key={streamer.id}
-                                         platform={streamer.platform}
-                                         upVotes={streamer.upVotes}
-                                         username={streamer.username}
-                                         downVotes={streamer.downVotes}/>
-                })}
-            </>
-        )
+    return (
+        <>
+            {streamers.map((streamer) => {
+                return <StreamerCard id={streamer.id} key={streamer.id}
+                                     platform={streamer.platform}
+                                     upVotes={streamer.upVotes}
+                                     username={streamer.username}
+                                     downVotes={streamer.downVotes}/>
+            })}
+        </>
+    )
 
 
 }
