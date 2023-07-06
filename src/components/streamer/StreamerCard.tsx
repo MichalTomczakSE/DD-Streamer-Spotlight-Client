@@ -5,17 +5,21 @@ import {GetStreamersData} from "../../types";
 import {DownVoteButton} from "../button/DownVoteButton";
 import {socket} from "../../contexts/WebSocketContext";
 import UpVoteButton from "../button/UpVoteButton";
+import {Loader} from "../common/Loader";
 
 
 export const StreamerCard = ({id, username, platform, upVotes, downVotes}: GetStreamersData) => {
     const truncatedUsername = username.length > 25 ? `${username.slice(0, 24)}...` : username;
     const [streamerPhoto, setStreamerPhoto] = useState<Response>()
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const getStreamerPhoto = async (id: string) => {
         try {
             const data = await fetch(`http://localhost:3000/streamers/image/${id}`)
             if (data.status === 404) {
+                setIsLoading(false)
             }
             setStreamerPhoto(data)
+            setIsLoading(false)
             return data
         } catch (error) {
             console.error(error)
@@ -41,12 +45,18 @@ export const StreamerCard = ({id, username, platform, upVotes, downVotes}: GetSt
         <div key={id}
              className="bg-white mx-auto flex flex-col items-center h-96 rounded-xl hover:scale-105 transition-all w-full shadow-md">
             <Link to={`streamer/${id}`} className="w-full h-1/2">
-                <img
+                {isLoading &&
+                    <div
+                        className='bg-black backdrop-blur-sm flex h-full justify-center items-center rounded-t-xl'>
+                        <Loader/>
+                    </div>
+                }
+                {!isLoading && <img
                     src={streamerPhoto?.status === 404 ? "https://upload.wikimedia.org/wikipedia/commons/2/2f/No-photo-m.png" : streamerPhoto?.url}
                     title={username}
                     alt={username}
-                    className="h-full rounded-t-xl w-full object-cover"
-                />
+                    className="h-full rounded-t-xl w-full object-cover bg-black"
+                />}
             </Link>
             <div className="py-2 text-center w-5/6">
                 <div className="flex justify-center">
