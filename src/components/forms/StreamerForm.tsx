@@ -1,9 +1,9 @@
-import React, {ChangeEvent, FormEvent, ReactNode, useContext, useState} from "react";
+import React, {ChangeEvent, FormEvent, ReactNode, useState} from "react";
 import {Loader} from "../common/Loader"
 import {Platform} from "../../types/index"
 import {DatalistPlatform} from "./DatalistPlatform"
-import {Link, Route} from "react-router-dom";
 import {StreamerRedirect} from "../common/StreamerRedirect";
+import {socket} from "../../contexts/WebSocketContext";
 
 interface AddStreamerProps {
     onRedirect: () => void;
@@ -64,10 +64,11 @@ export const StreamerForm = ({onRedirect}: AddStreamerProps) => {
         }
         if (res.status === 201) {
             setIsLoading(false)
+            socket.emit('newStreamer', formData.username)
             setFormMessage(
                 <div className='text-center'>
                     <span className='text-lg font-bold text-red-500 block '>Streamer {formData.username} created successfully!</span>
-                    <StreamerRedirect id={data.id} username={formData.username}/>
+                    <StreamerRedirect id={data.id} username={formData.username} parentFunction={() => onRedirect()}/>
                 </div>
             )
         }
