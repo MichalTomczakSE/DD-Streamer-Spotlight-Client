@@ -1,10 +1,12 @@
-import React, {ChangeEvent, FormEvent, useState} from "react";
+import React, {ChangeEvent, FormEvent, ReactNode, useState} from "react";
 import {Loader} from "../common/Loader"
 import {Platform} from "../../types/index"
 import {DatalistPlatform} from "./DatalistPlatform"
+import {StreamerRedirect} from "../common/StreamerRedirect";
+import {socket} from "../../contexts/WebSocketContext";
 
 interface AddStreamerProps {
-    addStreamer: () => void;
+    onRedirect: () => void;
 }
 
 interface FormValues {
@@ -19,9 +21,10 @@ interface SelectOption {
 }
 
 
-export const StreamerForm = ({addStreamer}: AddStreamerProps) => {
+export const StreamerForm = ({onRedirect}: AddStreamerProps) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [formData, setFormData] = useState<FormValues>({username: "", description: "", platform: ""});
+    const [formMessage, setFormMessage] = useState<ReactNode>(<></>);
     const [file, setFile] = useState<File>()
 
 
@@ -45,13 +48,34 @@ export const StreamerForm = ({addStreamer}: AddStreamerProps) => {
         if (file) {
             multipartFormData.append("image", file);
         }
-
         const res = await fetch("http://localhost:3000/streamers/", {
             method: "POST",
             body: multipartFormData,
         });
-        addStreamer()
-        setIsLoading(false)
+        const data = await res.json();
+        if (data.statusCode === 400) {
+            setIsLoading(false);
+            setFormMessage(
+                <div className="text-center">
+                    <span className='text-lg font-bold text-red-500 block '>{data.message}</span>
+                    <StreamerRedirect id={data.id} username={formData.username} parentFunction={() => onRedirect()}/>
+                </div>
+            )
+        }
+        if (res.status === 201) {
+            setIsLoading(false)
+            socket.emit('newStreamer', formData.username)
+            setFormMessage(
+                <div className='text-center'>
+                    <span className='text-lg font-bold text-red-500 block '>Streamer {formData.username} created successfully!</span>
+                    <StreamerRedirect id={data.id} username={formData.username} parentFunction={() => onRedirect()}/>
+                </div>
+            )
+        }
+        if (!data) {
+            setIsLoading(false);
+            setFormMessage(<span className='text-lg font-bold text-red-500 block text-center'>Something went wrong... Please try again!</span>);
+        }
     }
 
     const handlePlatformChange = (selectedOption: SelectOption | null) => {
@@ -69,6 +93,7 @@ export const StreamerForm = ({addStreamer}: AddStreamerProps) => {
                     </h3>
                     <Loader/>
                 </div>}
+                {formMessage}
                 {!isLoading &&
                     <form
                         className="space-y-6"

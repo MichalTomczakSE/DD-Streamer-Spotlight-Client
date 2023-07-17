@@ -14,11 +14,6 @@ export const Header = () => {
         setShowForm(false);
     }
 
-    const toggleUserForm = () => {
-        setShowForm(!showForm);
-    }
-
-
     return (
         <div className=" bg-black">
             <nav className="flex flex-col sm:flex-row items-center justify-between max-w-7xl mx-auto py-3 px-5">
@@ -48,11 +43,8 @@ export const Header = () => {
                         }}
                         className='text-white p-2 text-xs lg:text-lg'>Add streamer
                     </button>
-
-
                     <Modal isOpen={showModal} onClose={() => hideAllModals()}>
-                        {showForm && <StreamerForm
-                            addStreamer={() => toggleUserForm()}/>}
+                        {showForm && <StreamerForm onRedirect={() => hideAllModals()}/>}
                     </Modal>
                 </div>
             </nav>
